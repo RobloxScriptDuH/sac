@@ -9,7 +9,7 @@ local VirtualUser = game:GetService("VirtualUser")
 
 --// CHANGE THIS TO YOUR VIP SERVER LINK
 --// Example: https://www.roblox.com/games/11276071411/?privateServerLinkCode=abc123xyz
-local VIP_LINK_CODE = "https://www.roblox.com/share?code=ee38eecd69bb7e4d8193d98fa129ae5a&type=Server"  -- ← EDIT THIS!
+local VIP_LINK_CODE = "https://www.roblox.com/games/11276071411?privateServerLinkCode=ee38eecd69bb7e4d8193d98fa129ae5a"  -- ← EDIT THIS!
 
 local PLACE_ID = 11276071411
 local SCRIPT_URL = "https://raw.githubusercontent.com/RobloxScriptDuH/sac/refs/heads/main/Scripty"
