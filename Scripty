@@ -1,0 +1,78 @@
+--// AutoObby - VIP SERVER FARM (100% PRIVATE)
+--// Joins YOUR VIP server → Rejoins FOREVER → No other players
+--// Place in autoexec → NEVER stops
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local TeleportService = game:GetService("TeleportService")
+local VirtualUser = game:GetService("VirtualUser")
+
+--// CHANGE THIS TO YOUR VIP SERVER LINK
+--// Example: https://www.roblox.com/games/11276071411/?privateServerLinkCode=abc123xyz
+local VIP_LINK_CODE = "PUT_YOUR_VIP_LINK_CODE_HERE"  -- ← EDIT THIS!
+
+local PLACE_ID = 11276071411
+local SCRIPT_URL = "https://raw.githubusercontent.com/Bac0nHck/Scripts/refs/heads/main/AutoObbyHardPersistentGUI.luau"
+
+--// LocalPlayer
+local plr = Players.LocalPlayer
+if not plr then
+    plr = Players.PlayerAdded:Wait()
+end
+
+--// Anti-AFK
+task.spawn(function()
+    while task.wait(2) do
+        pcall(VirtualUser.ClickButton2, VirtualUser, Vector2.new())
+    end
+end)
+
+--// Wait for Lobby
+local lobby = Workspace:WaitForChild("Lobby", 10)
+if not lobby then return end
+
+--// QUEUE ON TELEPORT
+local queueTeleport = syn and syn.queue_on_teleport or getgenv().queue_on_teleport or fluxus and fluxus.queue_on_teleport
+if queueTeleport then
+    plr.OnTeleport:Connect(function()
+        pcall(queueTeleport, "loadstring(game:HttpGet('" .. SCRIPT_URL .. "'))()")
+    end)
+end
+
+--// REJOIN VIP SERVER FOREVER
+local function rejoinVIP()
+    if queueTeleport then
+        pcall(queueTeleport, "loadstring(game:HttpGet('" .. SCRIPT_URL .. "'))()")
+    end
+
+    print("Rejoining VIP server...")
+    TeleportService:TeleportToPlaceInstance(PLACE_ID, VIP_LINK_CODE, plr)
+end
+
+--// OBBY COMPLETION
+task.spawn(function()
+    task.wait(0.1)
+    local char = plr.Character or plr.CharacterAdded:Wait()
+    local hrp = char:WaitForChild("HumanoidRootPart")
+
+    local obby = lobby:FindFirstChild("Obby")
+    if not obby then return end
+
+    local function touch(part)
+        if not part then return end
+        hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+        if firetouchinterest then
+            firetouchinterest(hrp, part, 0)
+            firetouchinterest(hrp, part, 1)
+        end
+    end
+
+    touch(obby:FindFirstChild("ObbyEndPart"))
+    touch(obby:FindFirstChild("HardObbyEndPart"))
+
+    print("Obby done → rejoining VIP server")
+    task.wait(0.5)
+    rejoinVIP()
+end)
+
+print("AutoObby: VIP FARM LOADED - 100% PRIVATE")
