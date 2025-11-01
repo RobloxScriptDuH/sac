@@ -10,7 +10,7 @@ local HttpService = game:GetService("HttpService")
 
 local PLACE_ID = 11276071411
 local VIP_SHARE_CODE = "d610a52456bfe5468e5b0e36bde089c2"  -- ← YOUR CODE HERE
-local SCRIPT_URL = "https://raw.githubusercontent.com/Bac0nHck/Scripts/refs/heads/main/AutoObbyHardPersistentGUI.luau"
+local SCRIPT_URL = "https://raw.githubusercontent.com/RobloxScriptDuH/sac/refs/heads/main/Scripty"
 
 --// LocalPlayer
 local plr = Players.LocalPlayer
