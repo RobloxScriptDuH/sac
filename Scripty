@@ -1,16 +1,15 @@
---// AutoObby - VIP SHARE CODE (https://www.roblox.com/share?code=...)
---// Joins VIP via share code → 100% Private → Auto-Rejoin
---// Place in autoexec → FOREVER FARMING
+--// AutoObby - GOD MODE (VIP + SCRIPT AUTO-RESTART)
+--// NEVER dies, NEVER leaves VIP, NEVER stops
+--// Place in autoexec → YOU ARE ETERNAL
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
-local HttpService = game:GetService("HttpService")
 
 local PLACE_ID = 11276071411
-local VIP_SHARE_CODE = "d610a52456bfe5468e5b0e36bde089c2"  -- ← YOUR CODE HERE
-local SCRIPT_URL = "https://raw.githubusercontent.com/RobloxScriptDuH/sac/refs/heads/main/Scripty"
+local VIP_SHARE_CODE = "d610a52456bfe5468e5b0e36bde089c2"  -- ← YOUR CODE
+local SCRIPT_URL = "https://raw.githubusercontent.com/Bac0nHck/Scripts/refs/heads/main/AutoObbyHardPersistentGUI.luau"
 
 --// LocalPlayer
 local plr = Players.LocalPlayer
@@ -37,18 +36,54 @@ if queueTeleport then
     end)
 end
 
---// VIP REJOIN VIA SHARE CODE
-local function rejoinVIP()
+--// VIP URL (LOCKED)
+local VIP_URL = "https://www.roblox.com/games/" .. PLACE_ID .. "?privateServerLinkCode=" .. VIP_SHARE_CODE
+
+--// FORCE VIP
+local function forceVIP()
     if queueTeleport then
         pcall(queueTeleport, "loadstring(game:HttpGet('" .. SCRIPT_URL .. "'))()")
     end
-
-    local vipUrl = "https://www.roblox.com/games/" .. PLACE_ID .. "?privateServerLinkCode=" .. VIP_SHARE_CODE
-    print("Rejoining VIP: " .. vipUrl)
-
-    -- Teleport with VIP share code
-    TeleportService:Teleport(PLACE_ID, plr, nil, nil, {vipUrl})
+    print("GOD: FORCING VIP SERVER...")
+    TeleportService:Teleport(PLACE_ID, plr, nil, nil, {VIP_URL})
 end
+
+--// VIP GUARDIAN (Every 3s)
+task.spawn(function()
+    while true do
+        task.wait(3)
+        local inVIP = string.find(game:GetService("ContentProvider").BaseUrl, VIP_SHARE_CODE) ~= nil
+        if not inVIP then
+            print("GOD: KICKED FROM VIP → REJOINING")
+            forceVIP()
+        end
+    end
+end)
+
+--// SCRIPT HEARTBEAT (Auto-Restart if Dead)
+local lastHeartbeat = tick()
+local function heartbeat()
+    lastHeartbeat = tick()
+end
+
+task.spawn(function()
+    while true do
+        heartbeat()
+        task.wait(1)
+    end
+end)
+
+--// AUTO-RESTART IF SCRIPT DIES
+task.spawn(function()
+    while true do
+        task.wait(5)
+        if tick() - lastHeartbeat > 10 then
+            print("GOD: SCRIPT DIED → AUTO-RESTART")
+            loadstring(game:HttpGet(SCRIPT_URL))()
+            break
+        end
+    end
+end)
 
 --// OBBY (INSTANT)
 task.spawn(function()
@@ -71,9 +106,7 @@ task.spawn(function()
     touch(obby:FindFirstChild("ObbyEndPart"))
     touch(obby:FindFirstChild("HardObbyEndPart"))
 
-    print("Obby done → rejoining VIP")
-    task.wait(1)
-    rejoinVIP()
+    print("Obby done → GOD MODE ACTIVE")
 end)
 
-print("AutoObby: VIP SHARE CODE LOADED - https://share?code=... format")
+print("AutoObby: GOD MODE LOADED - VIP + AUTO-RESTART")
