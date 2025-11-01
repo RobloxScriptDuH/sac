@@ -1,18 +1,16 @@
---// AutoObby - VIP SERVER FARM (100% PRIVATE)
---// Joins YOUR VIP server → Rejoins FOREVER → No other players
---// Place in autoexec → NEVER stops
+--// AutoObby - VIP SHARE CODE (https://www.roblox.com/share?code=...)
+--// Joins VIP via share code → 100% Private → Auto-Rejoin
+--// Place in autoexec → FOREVER FARMING
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
-
---// CHANGE THIS TO YOUR VIP SERVER LINK
---// Example: https://www.roblox.com/games/11276071411/?privateServerLinkCode=abc123xyz
-local VIP_LINK_CODE = "https://www.roblox.com/games/11276071411?privateServerLinkCode=ee38eecd69bb7e4d8193d98fa129ae5a"  -- ← EDIT THIS!
+local HttpService = game:GetService("HttpService")
 
 local PLACE_ID = 11276071411
-local SCRIPT_URL = "https://raw.githubusercontent.com/RobloxScriptDuH/sac/refs/heads/main/Scripty"
+local VIP_SHARE_CODE = "d610a52456bfe5468e5b0e36bde089c2"  -- ← YOUR CODE HERE
+local SCRIPT_URL = "https://raw.githubusercontent.com/Bac0nHck/Scripts/refs/heads/main/AutoObbyHardPersistentGUI.luau"
 
 --// LocalPlayer
 local plr = Players.LocalPlayer
@@ -39,17 +37,20 @@ if queueTeleport then
     end)
 end
 
---// REJOIN VIP SERVER FOREVER
+--// VIP REJOIN VIA SHARE CODE
 local function rejoinVIP()
     if queueTeleport then
         pcall(queueTeleport, "loadstring(game:HttpGet('" .. SCRIPT_URL .. "'))()")
     end
 
-    print("Rejoining VIP server...")
-    TeleportService:TeleportToPlaceInstance(PLACE_ID, VIP_LINK_CODE, plr)
+    local vipUrl = "https://www.roblox.com/games/" .. PLACE_ID .. "?privateServerLinkCode=" .. VIP_SHARE_CODE
+    print("Rejoining VIP: " .. vipUrl)
+
+    -- Teleport with VIP share code
+    TeleportService:Teleport(PLACE_ID, plr, nil, nil, {vipUrl})
 end
 
---// OBBY COMPLETION
+--// OBBY (INSTANT)
 task.spawn(function()
     task.wait(0.1)
     local char = plr.Character or plr.CharacterAdded:Wait()
@@ -70,9 +71,9 @@ task.spawn(function()
     touch(obby:FindFirstChild("ObbyEndPart"))
     touch(obby:FindFirstChild("HardObbyEndPart"))
 
-    print("Obby done → rejoining VIP server")
-    task.wait(0.5)
+    print("Obby done → rejoining VIP")
+    task.wait(1)
     rejoinVIP()
 end)
 
-print("AutoObby: VIP FARM LOADED - 100% PRIVATE")
+print("AutoObby: VIP SHARE CODE LOADED - https://share?code=... format")
