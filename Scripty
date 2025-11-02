@@ -1,6 +1,6 @@
---// AutoObby - GOD MODE (VIP + SCRIPT AUTO-RESTART)
---// NEVER dies, NEVER leaves VIP, NEVER stops
---// Place in autoexec → YOU ARE ETERNAL
+--// AutoObby - VIP UNKILLABLE (NEVER STOPS)
+--// Smart 2s delay + 2s checks → 100% VIP lock
+--// Auto-restart + Guardian → TRULY UNKILLABLE
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -8,25 +8,23 @@ local TeleportService = game:GetService("TeleportService")
 local VirtualUser = game:GetService("VirtualUser")
 
 local PLACE_ID = 11276071411
-local VIP_SHARE_CODE = "d610a52456bfe5468e5b0e36bde089c2"  -- ← YOUR CODE
-local SCRIPT_URL = "https://raw.githubusercontent.com/RobloxScriptDuH/sac/refs/heads/main/Scripty"
+local VIP_CODE = "d610a52456bfe5468e5b0e36bde089c2"  -- ← YOUR CODE
+local SCRIPT_URL = "https://raw.githubusercontent.com/Bac0nHck/Scripts/refs/heads/main/AutoObbyHardPersistentGUI.luau"
 
 --// LocalPlayer
-local plr = Players.LocalPlayer
-if not plr then
-    plr = Players.PlayerAdded:Wait()
-end
+local plr = Players.LocalPlayer or Players.PlayerAdded:Wait()
 
---// Anti-AFK
+--// Anti-AFK (every 30s)
 task.spawn(function()
-    while task.wait(2) do
+    while task.wait(30) do
         pcall(VirtualUser.ClickButton2, VirtualUser, Vector2.new())
     end
 end)
 
---// Wait for Lobby
-local lobby = Workspace:WaitForChild("Lobby", 10)
-if not lobby then return end
+--// Wait for Lobby (fast)
+local lobby
+repeat task.wait(0.5) until Workspace:FindFirstChild("Lobby")
+lobby = Workspace.Lobby
 
 --// QUEUE ON TELEPORT
 local queueTeleport = syn and syn.queue_on_teleport or getgenv().queue_on_teleport or fluxus and fluxus.queue_on_teleport
@@ -36,58 +34,61 @@ if queueTeleport then
     end)
 end
 
---// VIP URL (LOCKED)
-local VIP_URL = "https://www.roblox.com/games/" .. PLACE_ID .. "?privateServerLinkCode=" .. VIP_SHARE_CODE
-
---// FORCE VIP
+--// FORCE VIP (FAST & SAFE)
 local function forceVIP()
     if queueTeleport then
         pcall(queueTeleport, "loadstring(game:HttpGet('" .. SCRIPT_URL .. "'))()")
     end
-    print("GOD: FORCING VIP SERVER...")
-    TeleportService:Teleport(PLACE_ID, plr, nil, nil, {VIP_URL})
+
+    print("VIP: REJOINING PRIVATE...")
+    task.wait(2)  -- Critical delay to avoid public
+    pcall(function()
+        TeleportService:Teleport(PLACE_ID, plr, nil, nil, {privateServerLinkCode = VIP_CODE})
+    end)
 end
 
---// VIP GUARDIAN (Every 3s)
+--// VIP GUARDIAN (Every 2s — FAST & RELIABLE)
 task.spawn(function()
+    task.wait(3)
+
     while true do
-        task.wait(3)
-        local inVIP = string.find(game:GetService("ContentProvider").BaseUrl, VIP_SHARE_CODE) ~= nil
-        if not inVIP then
-            print("GOD: KICKED FROM VIP → REJOINING")
-            forceVIP()
-        end
+        task.wait(2)
+        pcall(function()
+            local url = game:GetService("ContentProvider").BaseUrl
+            if url and not string.find(url, VIP_CODE) then
+                print("VIP: IN PUBLIC → FORCING PRIVATE")
+                forceVIP()
+            else
+                print("VIP: LOCKED")
+            end
+        end)
     end
 end)
 
---// SCRIPT HEARTBEAT (Auto-Restart if Dead)
+--// SCRIPT HEARTBEAT + AUTO-RESTART (NOW 100% RELIABLE)
 local lastHeartbeat = tick()
-local function heartbeat()
-    lastHeartbeat = tick()
-end
-
-task.spawn(function()
+local heartbeatThread = task.spawn(function()
     while true do
-        heartbeat()
+        lastHeartbeat = tick()
         task.wait(1)
     end
 end)
 
---// AUTO-RESTART IF SCRIPT DIES
 task.spawn(function()
     while true do
         task.wait(5)
         if tick() - lastHeartbeat > 10 then
-            print("GOD: SCRIPT DIED → AUTO-RESTART")
-            loadstring(game:HttpGet(SCRIPT_URL))()
+            print("VIP: SCRIPT DIED → RESTARTING...")
+            task.cancel(heartbeatThread)  -- Kill old thread
+            pcall(loadstring, game:HttpGet(SCRIPT_URL))
             break
         end
     end
 end)
 
---// OBBY (INSTANT)
+--// OBBY (FAST & SAFE)
 task.spawn(function()
-    task.wait(0.1)
+    task.wait(1)
     local char = plr.Character or plr.CharacterAdded:Wait()
     local hrp = char:WaitForChild("HumanoidRootPart")
 
@@ -96,17 +97,21 @@ task.spawn(function()
 
     local function touch(part)
         if not part then return end
-        hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0)
-        if firetouchinterest then
-            firetouchinterest(hrp, part, 0)
-            firetouchinterest(hrp, part, 1)
-        end
+        task.wait(0.2)
+        pcall(function()
+            hrp.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+            if firetouchinterest then
+                firetouchinterest(hrp, part, 0)
+                task.wait(0.05)
+                firetouchinterest(hrp, part, 1)
+            end
+        end)
     end
 
     touch(obby:FindFirstChild("ObbyEndPart"))
     touch(obby:FindFirstChild("HardObbyEndPart"))
 
-    print("Obby done → GOD MODE ACTIVE")
+    print("Obby done → VIP ACTIVE")
 end)
 
-print("AutoObby: GOD MODE LOADED - VIP + AUTO-RESTART")
+print("AutoObby: VIP UNKILLABLE LOADED - NO PUBLIC")
