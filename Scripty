@@ -1,6 +1,6 @@
---// AutoObby - VIP UNKILLABLE (NEVER STOPS)
+--// AutoObby - VIP FAST PERFECT (NO PUBLIC, 3x FASTER)
 --// Smart 2s delay + 2s checks → 100% VIP lock
---// Auto-restart + Guardian → TRULY UNKILLABLE
+--// Auto-restart + Guardian → UNKILLABLE
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -65,9 +65,9 @@ task.spawn(function()
     end
 end)
 
---// SCRIPT HEARTBEAT + AUTO-RESTART (NOW 100% RELIABLE)
+--// SCRIPT HEARTBEAT + AUTO-RESTART
 local lastHeartbeat = tick()
-local heartbeatThread = task.spawn(function()
+task.spawn(function()
     while true do
         lastHeartbeat = tick()
         task.wait(1)
@@ -78,8 +78,7 @@ task.spawn(function()
     while true do
         task.wait(5)
         if tick() - lastHeartbeat > 10 then
-            print("VIP: SCRIPT DIED → RESTARTING...")
-            task.cancel(heartbeatThread)  -- Kill old thread
+            print("VIP: SCRIPT DIED → RESTART")
             pcall(loadstring, game:HttpGet(SCRIPT_URL))
             break
         end
@@ -114,4 +113,4 @@ task.spawn(function()
     print("Obby done → VIP ACTIVE")
 end)
 
-print("AutoObby: VIP UNKILLABLE LOADED - NO PUBLIC")
+print("AutoObby: VIP FAST PERFECT LOADED - NO PUBLIC")
